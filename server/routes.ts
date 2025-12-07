@@ -46,9 +46,16 @@ export async function registerRoutes(
   const songsPath = path.resolve(process.cwd(), "songs");
   app.use("/songs", express.static(songsPath));
 
+  const publicPath = path.resolve(process.cwd(), "public");
+  app.use(express.static(publicPath));
+
   app.get("/api/game-config", (_req, res) => {
     const config = loadGameConfig();
     res.json(config);
+  });
+
+  app.get("*", (_req, res) => {
+    res.sendFile(path.resolve(publicPath, "index.html"));
   });
 
   return httpServer;
