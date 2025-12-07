@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "./Header";
 import AudioPlayer from "./AudioPlayer";
 import GuessInput from "./GuessInput";
 import RoundResult from "./RoundResult";
 import HowToPlayModal from "./HowToPlayModal";
-import { gameConfig, getRoundSong, getDecoyOptions, type Song } from "@/lib/gameConfig";
+import { type GameConfig, type Song, defaultGameConfig, getRoundSong, getDecoyOptions } from "@/lib/gameConfig";
 
 interface RoundResultData {
   songTitle: string;
@@ -19,6 +20,10 @@ interface GameScreenProps {
 }
 
 export default function GameScreen({ onGameEnd }: GameScreenProps) {
+  const { data: gameConfig = defaultGameConfig, isLoading } = useQuery<GameConfig>({
+    queryKey: ["/api/game-config"],
+  });
+
   const [currentRound, setCurrentRound] = useState(0);
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
@@ -31,13 +36,19 @@ export default function GameScreen({ onGameEnd }: GameScreenProps) {
   const [results, setResults] = useState<RoundResultData[]>([]);
   const [songOptions, setSongOptions] = useState<Song[]>([]);
 
-  const currentSong = getRoundSong(currentRound);
+  const currentSong = getRoundSong(gameConfig, currentRound);
+
+  useEffect(() => {
+    if (gameConfig.initialDuration) {
+      setCurrentDuration(gameConfig.initialDuration);
+    }
+  }, [gameConfig.initialDuration]);
 
   useEffect(() => {
     if (currentSong) {
-      setSongOptions(getDecoyOptions(currentSong));
+      setSongOptions(getDecoyOptions(gameConfig, currentSong));
     }
-  }, [currentRound]);
+  }, [currentRound, currentSong, gameConfig]);
 
   const calculatePoints = (attemptsUsed: number, skips: number): number => {
     const basePoints = 200;
@@ -99,8 +110,34 @@ export default function GameScreen({ onGameEnd }: GameScreenProps) {
     }
   };
 
-  if (!currentSong) {
-    return <div className="text-center p-8">No songs configured for this round.</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <p className="text-muted-foreground">Loading game...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentSong || gameConfig.songs.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+        <div className="text-center max-w-md">
+          <h2 className="text-xl font-semibold text-white mb-4">No Songs Configured</h2>
+          <p className="text-muted-foreground mb-4">
+            Please add songs to the game by editing the configuration file at:
+          </p>
+          <code className="bg-card px-3 py-2 rounded text-sm text-primary block">
+            songs/game-config.json
+          </code>
+          <p className="text-muted-foreground mt-4 text-sm">
+            Add your MP3 files to the /songs folder and update the configuration.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const audioSrc = `/songs/${currentSong.filename}`;

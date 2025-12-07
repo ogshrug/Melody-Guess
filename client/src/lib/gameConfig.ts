@@ -14,39 +14,20 @@ export interface GameConfig {
   songs: Song[];
 }
 
-export const gameConfig: GameConfig = {
+export const defaultGameConfig: GameConfig = {
   totalRounds: 3,
   initialDuration: 2,
   maxDuration: 16,
   skipIncrement: 2,
   maxSkips: 5,
-  songs: [
-    {
-      id: "song1",
-      title: "Song One",
-      artist: "Artist One",
-      filename: "song1.mp3"
-    },
-    {
-      id: "song2", 
-      title: "Song Two",
-      artist: "Artist Two",
-      filename: "song2.mp3"
-    },
-    {
-      id: "song3",
-      title: "Song Three", 
-      artist: "Artist Three",
-      filename: "song3.mp3"
-    }
-  ]
+  songs: []
 };
 
-export const getRoundSong = (roundIndex: number): Song | undefined => {
-  return gameConfig.songs[roundIndex];
+export const getRoundSong = (config: GameConfig, roundIndex: number): Song | undefined => {
+  return config.songs[roundIndex];
 };
 
-export const getDecoyOptions = (correctSong: Song): Song[] => {
-  const decoys = gameConfig.songs.filter(s => s.id !== correctSong.id);
+export const getDecoyOptions = (config: GameConfig, correctSong: Song): Song[] => {
+  const decoys = config.songs.filter(s => s.id !== correctSong.id);
   return [correctSong, ...decoys].sort(() => Math.random() - 0.5);
 };

@@ -1,0 +1,27 @@
+{
+  "totalRounds": 3,
+  "initialDuration": 2,
+  "maxDuration": 16,
+  "skipIncrement": 2,
+  "maxSkips": 5,
+  "songs": [
+    {
+      "id": "song1",
+      "title": "Song One",
+      "artist": "Artist One",
+      "filename": "song1.mp3"
+    },
+    {
+      "id": "song2",
+      "title": "Song Two",
+      "artist": "Artist Two",
+      "filename": "song2.mp3"
+    },
+    {
+      "id": "song3",
+      "title": "Song Three",
+      "artist": "Artist Three",
+      "filename": "song3.mp3"
+    }
+  ]
+}
