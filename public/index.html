@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Songless Unlimited</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+      <div class="start-content">
+        <div class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
+          </svg>
+        </div>
+        <h1>Songless Unlimited</h1>
+        <p class="subtitle">Test your music knowledge! Listen to song intros and guess the title.</p>
+        <div class="button-group">
+          <button id="btn-start" class="btn btn-primary" data-testid="button-start-game">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Start Game
+          </button>
+          <button id="btn-how-to-play" class="btn btn-outline" data-testid="button-how-to-play">How to Play</button>
+        </div>
+        <p class="rounds-info">3 rounds of music trivia await!</p>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen hidden">
+      <header class="game-header">
+        <div class="header-left">
+          <span id="round-display" class="round-badge">Round 1/3</span>
+        </div>
+        <div class="header-right">
+          <span id="score-display" class="score">Score: 0</span>
+          <button id="btn-help" class="btn btn-icon" data-testid="button-help">?</button>
+        </div>
+      </header>
+
+      <main class="game-main">
+        <!-- Audio Player -->
+        <div id="audio-player" class="audio-player">
+          <div class="player-controls">
+            <button id="btn-play" class="btn btn-play" data-testid="button-play">
+              <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              <svg id="pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+            </button>
+          </div>
+          <div class="progress-container">
+            <div id="progress-bar" class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="time-display">
+              <span id="current-time">0:00</span>
+              <span id="max-time">/ 0:02</span>
+            </div>
+          </div>
+          <button id="btn-skip" class="btn btn-secondary" data-testid="button-skip">
+            SKIP (<span id="skips-remaining">5</span>)
+          </button>
+        </div>
+
+        <!-- Guess Input -->
+        <div id="guess-section" class="guess-section">
+          <div class="search-container">
+            <input type="text" id="song-search" class="search-input" placeholder="Search for a song..." data-testid="input-song-search" autocomplete="off">
+            <div id="song-dropdown" class="song-dropdown hidden"></div>
+          </div>
+          <button id="btn-submit" class="btn btn-primary" data-testid="button-submit-guess" disabled>Submit Guess</button>
+        </div>
+
+        <p id="attempts-display" class="attempts">Attempts: 0/5</p>
+
+        <!-- Round Result (hidden by default) -->
+        <div id="round-result" class="round-result hidden">
+          <div id="result-icon" class="result-icon"></div>
+          <h2 id="result-title"></h2>
+          <p id="result-song" class="result-song"></p>
+          <p id="result-stats" class="result-stats"></p>
+          <button id="btn-next" class="btn btn-primary" data-testid="button-next-round">Next Round</button>
+        </div>
+      </main>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="screen hidden">
+      <div class="results-content">
+        <h1>Game Complete!</h1>
+        <div id="final-score" class="final-score"></div>
+        <div id="results-list" class="results-list"></div>
+        <button id="btn-play-again" class="btn btn-primary" data-testid="button-play-again">Play Again</button>
+      </div>
+    </div>
+
+    <!-- How to Play Modal -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>How to Play</h2>
+          <button id="btn-close-modal" class="btn btn-icon">&times;</button>
+        </div>
+        <div class="modal-content">
+          <div class="instruction">
+            <span class="instruction-number">1</span>
+            <p>Listen to the song intro - it starts with just 2 seconds!</p>
+          </div>
+          <div class="instruction">
+            <span class="instruction-number">2</span>
+            <p>Try to guess the song from the options provided.</p>
+          </div>
+          <div class="instruction">
+            <span class="instruction-number">3</span>
+            <p>Use SKIP to hear more of the song (adds 2 seconds each time).</p>
+          </div>
+          <div class="instruction">
+            <span class="instruction-number">4</span>
+            <p>Fewer attempts and skips = higher score!</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-modal-play" class="btn btn-primary">Got it!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Songs Message -->
+    <div id="no-songs-screen" class="screen hidden">
+      <div class="no-songs-content">
+        <h2>No Songs Configured</h2>
+        <p>Please add songs to the game by editing the configuration file at:</p>
+        <code>songs/game-config.json</code>
+        <p class="small">Add your MP3 files to the /songs folder and update the configuration.</p>
+        <button id="btn-back-home" class="btn btn-outline">Back to Home</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio-element" preload="auto"></audio>
+  <script src="game.js"></script>
+</body>
+</html>
